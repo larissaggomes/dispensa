@@ -54,4 +54,5 @@ const ler = () => {
 }
 
 window.addEventListener('DOMContentLoaded', event => {
+    ler()
 });
