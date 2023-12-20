@@ -27,7 +27,8 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" id="mainNav">
         <div class="container px-5">
-            <a class="navbar-brand fw-bold" href="#page-top">Cadastro de produtos</a>
+            <a class="navbar-brand fw-bold" style="color:#cdcdcd;">Cadastro de produtos</a>
+            <a class="navbar-brand fw-bold" href="tabela.html">Lista de produtos</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 Menu
@@ -55,10 +56,6 @@
                     <!-- Mashead text and app badges-->
                     <div class="mb-5 mb-lg-0 text-center text-lg-start">
                         <div class="form-group">
-                            <div class="form-group">
-                                <label for="id">Id</label>
-                                <input type="text" class="form-control" id="id" placeholder="">
-                            </div>
                             <label for="nome">Nome do produto</label>
                             <input type="text" class="form-control" id="nome" placeholder="Digite o nome">
                         </div>
@@ -68,7 +65,7 @@
                         </div>
                         <br>
                         <button onclick="salvarProduto()" class="btn btn-primary">
-                            Adicionar
+                            Salvar
                         </button>
                         <br>
                         <div id="crud"></div>
