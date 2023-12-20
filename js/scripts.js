@@ -1,18 +1,94 @@
 const salvarProduto = () => {
-    let nome = document.getElementById('nome');
-    let preco = document.getElementById('preco');
-    let id = document.getElementById('id');
-    if (nome.value && preco.value && id.value) {
-        cadastrar(id.value, nome.value, preco.value)
+    //pegendo os elementos input da tela
+    const inputNome = document.getElementById('nome');
+    const inputPreco = document.getElementById('preco');
+    const inputId = document.getElementById('id');
 
-        nome.value = "";
-        preco.value = "";
-        id.value = "";
+    //verificando se os valores dos inputs sao validos
+    if (nome.value && preco.value && id.value) {
+        //pegando o id da url
+        const id_produto = getidbyURL();
+
+        //verificando se existe um id na url
+        (id_produto) ? 
+        //se sim editamos 
+        editar(inputId.value, inputNome.value, inputPreco.value)
+        //se nao, cadastramos 
+        :cadastrar(inputId.value, inputNome.value, inputPreco.value);
+
+        
+        
     } else {
+        //caso os campos estejam invalidos, mostrar mensagem na tela
         alert("Campos obrigatórios");
     }
 
 
+}
+
+const ler = () => {
+    // pegando o tbody da tela 
+    const tbody = document.querySelector('tbody');
+
+    //faz uma requisao na url da API e usando o GET para pegar uma lista de objetos
+    fetch("http://localhost:4000/produtos")
+
+        // Convetendo os dados (lista de produtos) de texto json para objeto json
+        .then(response => response.json())
+        .then(json => {
+            json.forEach(produto => {
+                // criando novos elemntos como o tr,th e tdnome tdpreco
+                tr = document.createElement('tr');
+                th = document.createElement('th');
+                td_nome = document.createElement('td');
+                td_preco = document.createElement('td');
+                td_editar = document.createElement('td');
+                td_deletar = document.createElement('td');
+                icon_editar = document.createElement('i');
+                icon_deletar = document.createElement('i');
+
+                //inserido o valor do scope
+                th.scope = 'row';
+                //inserido o texto id,nome e preço
+                th.innerText = produto.id; // <th> 1 </th>
+                td_nome.innerText = produto.nome; // <td> leite </td>
+                td_preco.innerText = produto.preco; // <td> 11 </td>
+                
+                // adicionado icones nos botões de editar e deletar
+                // <i class="fa fa-pencil" aria-hidden="true"></i>
+                icon_editar.classList = "fa fa-pencil";
+                icon_editar.setAttribute('aria-hidden','true');
+                icon_editar.style = "cursor: pointer";
+                td_editar.append(icon_editar); //<td> <i></i> <td>
+                
+                //<i class="fa fa-trash" aria-hidden="true"></i>
+                icon_deletar.classList = "fa fa-trash";
+                icon_deletar.setAttribute('aria-hidden','true');
+                icon_deletar.style = "cursor: pointer";
+                td_deletar.append(icon_deletar); //<td> <i></i> </td>
+
+                // adicionado evento de editar no botao de editar
+                icon_editar.onclick = () => {
+                    window.location.replace("index.html?id=" + produto.id);
+                }
+
+                // adicionado evento de deletar no botao de deletar
+                icon_deletar.onclick = () => {
+                    console.log(produto.id);
+                }
+
+                //inserido os filhos do elemento do tr
+                tr.append(th); //<tr> <th></th> </tr>
+                tr.append(td_nome); // <tr> <td></td> </tr>
+                tr.append(td_preco);
+                tr.append(td_editar);
+                tr.append(td_deletar);
+
+                //adicionado ao tbody o elemento tr 
+                tbody.append(tr);
+            });
+
+        });
 }
 
 const cadastrar = (id, nome, preco) => {
@@ -38,8 +114,8 @@ const cadastrar = (id, nome, preco) => {
         // Converting to JSON
         .then(response => response.json())
 
-        // Displaying results to console
-        .then(json => console.log(json));
+        // redirecionndo para tela do tabela
+        .then(json => window.location.replace('tabela.html'));
 }
 
 const editar = (id, nome, preco) => {
@@ -67,71 +143,43 @@ const editar = (id, nome, preco) => {
         // Converting to JSON
         .then(response => response.json())
 
-        // Displaying results to console
-        .then(json => console.log(json));
+        // redirecionado pra tela da tabela
+        .then(json => window.location.replace('tabela.html'));
 }
 
-const ler = () => {
-    // pegando o tbody da tela 
-    tbody = document.querySelector('tbody')
+const getidbyURL = () => {
+    //pegando a url atual
+    const url_string = window.location.href;
+    //coventendo a string de url em um objeto URL
+    const url = new URL(url_string);
+    //pegando o parametro ID da url
+    const id_produto = url.searchParams.get("id");
 
-    //faz uma requisao na url da API e usando o GET para pegar uma lista de objetos
-    fetch("http://localhost:4000/produtos")
-
-        // Convetendo os dados (lista de produtos) de texto json para objeto json
-        .then(response => response.json())
-        .then(json => {
-            json.forEach(produto => {
-                // criando novos elemntos como o tr,th e tdnome tdpreco
-                tr = document.createElement('tr')
-                th = document.createElement('th')
-                td_nome = document.createElement('td')
-                td_preco = document.createElement('td')
-                td_editar = document.createElement('td')
-                td_deletar = document.createElement('td')
-
-                //inserido o valor do scope
-                th.scope = 'row'
-                //inserido o texto id,nome e preço
-                th.innerText = produto.id
-                td_nome.innerText = produto.nome
-                td_preco.innerText = produto.preco
-                td_editar.innerText = "e"
-                td_deletar.innerText = "d"
-                td_editar.onclick = () => {
-                    window.location.replace("index.html?id=" + produto.id)
-                }
-                td_deletar.onclick = () => {
-                    console.log(produto.id);
-                }
-
-                //inserido os filhos do elemento do tr
-                tr.append(th)
-                tr.append(td_nome)
-                tr.append(td_preco)
-                tr.append(td_editar)
-                tr.append(td_deletar)
-
-                //adicionado ao tbody o elemento tr 
-                tbody.append(tr)
-            });
-
-        });
-}
+    //retornado id de produto
+    return id_produto;
+} 
 
 const getbyid = () => {
+    const inputNome = document.getElementById('nome');
+    const inputPreco = document.getElementById('preco');
+    const inputId = document.getElementById('id');
 
-
-    var url_string = window.location.href;
-    var url = new URL(url_string);
-    var id_produto = url.searchParams.get("id"); //pega o value
+    const id_produto = getidbyURL();
 
     fetch("http://localhost:4000/produtos/"+id_produto)
 
         // Convetendo os dados (lista de produtos) de texto json para objeto json
         .then(response => response.json())
-        .then(json => {
-            console.log(json);
+        .then(produto => {
+
+            //inserido os valores dos inputs de acordo com o produto
+            // recebido da requisição
+            inputNome.value = produto.nome;
+            inputPreco.value = produto.preco;
+            inputId.value = produto.id
+            
+            // desabilitado o campo id para nao permitir editar
+            inputId.disabled = true;
         })
 
 }
