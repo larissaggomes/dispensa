@@ -231,7 +231,45 @@ const deletar = (idProduto) => {
         .then(json => ler());
 }
 
+const gerarRelatorio = () =>{
+    const ul = document.querySelector('.list-group'); 
+    const total = document.querySelector('div.total');
+
+    if (!ul) return false;
+
+    let total_valor = 0; 
+
+    fetch("http://localhost:4000/produtos?filter=relatorio")
+
+        // Convetendo os dados (lista de produtos) de texto json para objeto json
+        .then(response => response.json())
+        .then(produtos => {
+            console.log(produtos);
+            produtos.forEach(produto =>{
+                li = document.createElement('li');
+                strong = document.createElement('strong');
+                p_preco = document.createElement('p');
+                p_estoque = document.createElement('p');
+
+                strong.innerText = produto.nome;
+                p_preco.innerText = "Preço: " + produto.preco;
+                p_estoque.innerText = "Estoque: " + produto.estoque + "/" + produto.estoqueMinimo;
+
+                li.classList = "list-group-item";
+
+                li.append(strong);
+                li.append(p_preco);
+                li.append(p_estoque);
+                ul.append(li);
+
+                total_valor += +produto.preco;
+            });
+            total.innerText = "Total: " + total_valor;
+        });
+}
+
 window.addEventListener('DOMContentLoaded', event => {
     ler()
     getbyid()
+    gerarRelatorio()
 });
