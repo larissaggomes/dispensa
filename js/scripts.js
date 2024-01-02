@@ -2,17 +2,19 @@ const getbyid = () => {
     const id_produto = getidbyURL();
 
     //validando se existe uma id na url
-    if (!id_produto)return false;
-        
-    
+    if (!id_produto) return false;
+
+
     //pegando os elementos da tela por id
     const inputNome = document.getElementById('nome');
     const inputPreco = document.getElementById('preco');
+    const inputMinimo = document.getElementById('estoque_minimo');
+    const inputEstoque = document.getElementById('estoque');
 
-    
+
     //fazendo uma requisição para api passando o id do produto no final da url
     //para buscaro produto por id no banco de dados
-    fetch("http://localhost:4000/produtos/"+id_produto)
+    fetch("http://localhost:4000/produtos/" + id_produto)
 
         // Convetendo os dados (lista de produtos) de texto json para objeto json
         .then(response => response.json())
@@ -22,6 +24,8 @@ const getbyid = () => {
             // recebido da requisição
             inputNome.value = produto.nome;
             inputPreco.value = produto.preco;
+            inputMinimo.value = produto.estoqueMinimo;
+            inputEstoque.value = produto.estoque;
         })
 
 }
@@ -36,14 +40,14 @@ const getidbyURL = () => {
 
     //retornado id de produto
     return id_produto;
-} 
+}
 
 const ler = () => {
     // pegando o tbody da tela 
     const tbody = document.querySelector('tbody');
-    
+
     //validando o tbody
-    if(!tbody)return false;
+    if (!tbody) return false;
 
     //limpando o conteudo do tbody
     tbody.innerText = "";
@@ -60,6 +64,8 @@ const ler = () => {
                 th = document.createElement('th');
                 td_nome = document.createElement('td');
                 td_preco = document.createElement('td');
+                td_estoqueMinimo = document.createElement('td');
+                td_estoque = document.createElement('td');
                 td_editar = document.createElement('td');
                 td_deletar = document.createElement('td');
                 icon_editar = document.createElement('i');
@@ -71,17 +77,19 @@ const ler = () => {
                 th.innerText = produto.id; // <th> 1 </th>
                 td_nome.innerText = produto.nome; // <td> leite </td>
                 td_preco.innerText = produto.preco; // <td> 11 </td>
-                
+                td_estoqueMinimo.innerText = produto.estoqueMinimo; // <td> 6 </td>
+                td_estoque.innerText = produto.estoque; // <td> 3 </td>
+
                 // adicionado icones nos botões de editar e deletar
                 // <i class="fa fa-pencil" aria-hidden="true"></i>
                 icon_editar.classList = "fa fa-pencil";
-                icon_editar.setAttribute('aria-hidden','true');
+                icon_editar.setAttribute('aria-hidden', 'true');
                 icon_editar.style = "cursor: pointer";
                 td_editar.append(icon_editar); //<td> <i></i> <td>
-                
+
                 //<i class="fa fa-trash" aria-hidden="true"></i>
                 icon_deletar.classList = "fa fa-trash";
-                icon_deletar.setAttribute('aria-hidden','true');
+                icon_deletar.setAttribute('aria-hidden', 'true');
                 icon_deletar.style = "cursor: pointer";
                 td_deletar.append(icon_deletar); //<td> <i></i> </td>
 
@@ -92,7 +100,6 @@ const ler = () => {
 
                 // adicionado evento de deletar no botao de deletar
                 icon_deletar.onclick = () => {
-                
                     deletar(produto.id);
                 }
 
@@ -100,6 +107,8 @@ const ler = () => {
                 tr.append(th); //<tr> <th></th> </tr>
                 tr.append(td_nome); // <tr> <td></td> </tr>
                 tr.append(td_preco);
+                tr.append(td_estoqueMinimo);
+                tr.append(td_estoque);
                 tr.append(td_editar);
                 tr.append(td_deletar);
 
@@ -114,21 +123,23 @@ const salvarProduto = () => {
     //pegendo os elementos input da tela
     const inputNome = document.getElementById('nome');
     const inputPreco = document.getElementById('preco');
+    const inputMinimo = document.getElementById('estoque_minimo');
+    const inputEstoque = document.getElementById('estoque');
 
     //verificando se os valores dos inputs sao validos
-    if (nome.value && preco.value) {
+    if (inputNome.value && inputPreco.value && inputMinimo && inputEstoque) {
         //pegando o id da url
         const id_produto = getidbyURL();
 
         //verificando se existe um id na url
-        (id_produto) ? 
-        //se sim editamos 
-        editar(id_produto, inputNome.value, inputPreco.value)
-        //se nao, cadastramos 
-        :cadastrar(inputNome.value, inputPreco.value);
+        (id_produto) ?
+            //se sim editamos 
+            editar(id_produto, inputNome.value, inputPreco.value, inputMinimo.value, inputEstoque.value)
+            //se nao, cadastramos 
+            : cadastrar(inputNome.value, inputPreco.value, inputMinimo.value, inputEstoque.value);
 
-        
-        
+
+
     } else {
         //caso os campos estejam invalidos, mostrar mensagem na tela
         alert("Campos obrigatórios");
@@ -138,7 +149,7 @@ const salvarProduto = () => {
 }
 
 
-const cadastrar = (nome, preco) => {
+const cadastrar = (nome, preco, estoqueMinimo, estoque) => {
     // POST request using fetch()
     fetch("http://localhost:4000/produtos", {
 
@@ -148,7 +159,9 @@ const cadastrar = (nome, preco) => {
         // Adding body or contents to send
         body: JSON.stringify({
             nome: nome,
-            preco: preco
+            preco: preco,
+            estoqueMinimo: estoqueMinimo,
+            estoque: estoque
         }),
 
         // Adding headers to the request
@@ -164,11 +177,13 @@ const cadastrar = (nome, preco) => {
         .then(json => window.location.replace('tabela.html'));
 }
 
-const editar = (id, nome, preco) => {
+const editar = (id, nome, preco, estoqueMinimo, estoque) => {
     // criando o objeto do json do payload(corpo que leva os dados)
     payload = JSON.stringify({
         nome: nome,
-        preco: preco
+        preco: preco,
+        estoqueMinimo: estoqueMinimo,
+        estoque: estoque
     })
 
     // contatenando o id na url para fazer o PUT
@@ -193,27 +208,27 @@ const editar = (id, nome, preco) => {
         .then(json => window.location.replace('tabela.html'));
 }
 
-const deletar = (idProduto) =>{
+const deletar = (idProduto) => {
     const confirm = window.confirm("tem certeza que deseja deletar?");
-    if (!confirm)return false;
+    if (!confirm) return false;
 
-     // contatenando o id na url para fazer o PUT
-     fetch("http://localhost:4000/produtos/" + idProduto, {
+    // contatenando o id na url para fazer o PUT
+    fetch("http://localhost:4000/produtos/" + idProduto, {
 
-     // chamando o metodo DELETE para deletar dado
-     method: "DELETE",
+        // chamando o metodo DELETE para deletar dado
+        method: "DELETE",
 
-     // Adding headers to the request
-     headers: {
-         "Content-type": "application/json; charset=UTF-8"
-     }
- })
+        // Adding headers to the request
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
 
-     // Converting to JSON
-     .then(response => response.json())
+        // Converting to JSON
+        .then(response => response.json())
 
-     // chamado o metodo ler para atualizar os itens da tabela
-     .then(json => ler());
+        // chamado o metodo ler para atualizar os itens da tabela
+        .then(json => ler());
 }
 
 window.addEventListener('DOMContentLoaded', event => {
